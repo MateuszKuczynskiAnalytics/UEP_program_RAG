@@ -1,4 +1,4 @@
 raw_data/
 .env
-*vectorstore/
 logs/
+chunks/

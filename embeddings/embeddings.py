@@ -11,15 +11,6 @@ embeddings = OpenAIEmbeddings(openai_api_key=api_key)
 vector_store = FAISS.from_documents(all_chunks, embeddings)
 vector_store.save_local("uni_program_vectorstore")
 
-retrieved_docs = vector_store.similarity_search(query="Jakie są najważniejsze przedmioty na kierunku ekonomia?", k=5)
-
-# Metadata is included with the retrieved documents
-for doc in retrieved_docs:
-    print("Text:", doc.page_content)
-    print("Metadata:", doc.metadata)
-
-
-
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -41,19 +32,16 @@ Udziel szczegółowej odpowiedzi korzystając z dostarczonego kontekstu. Jeśli 
 """
 )
 
-# Create the RetrievalQA chain with the custom Polish prompt
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     retriever=vector_store.as_retriever(),
-    return_source_documents=True,  # Include source documents in the response
+    return_source_documents=True,
     chain_type_kwargs={"prompt": prompt_template}
 )
 
-# Run the question through the QA chain
 question = "Opowiedz mi w szczegółach czego uczyłbym się na kierunku prawno-ekonomicznym?"
 result = qa_chain.invoke({"query": question})
 
-# Print the results
 print("Odpowiedź:", result["result"])
 
 print("Źródła:")
